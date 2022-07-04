@@ -1,0 +1,14 @@
+{
+  "name": "reference-backloop",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "ts-node-dev --quiet --debounce --respawn --clear -- index.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ts-node-dev": "^2.0.0"
+  }
+}
