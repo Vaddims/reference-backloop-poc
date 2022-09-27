@@ -24,11 +24,11 @@ type BackloopReference<T extends SerializationNode<any>> = T[ValueProp] extends 
       { [K in ExtractIndexes<T[ValueProp]>]: BackloopReference<T[ValueProp][K]> } :
     { [K in keyof T[ValueProp]]: BackloopReference<T[ValueProp][K]> };
 
-type BackloopReferenceResolve<T extends Object> = T extends BackloopEndPoint<infer U> ?
+type BackloopReferenceResolve<T extends { [key: string | number | symbol]: any }> = T extends BackloopEndPoint<infer U> ?
   U extends SerializationNode ? U : BackloopObjectResolve<T> :
   never;  
 
-type BackloopObjectResolve<T> = T extends ImplicitArray<infer U> ?
+type BackloopObjectResolve<T extends { [key: string | number | symbol]: BackloopReference<any> }> = T extends ImplicitArray<infer U> ?
   U extends BackloopEndPoint<infer U2> ?
     {} extends T ? 
       SerializationNode<readonly U2[]> : 
@@ -101,9 +101,9 @@ class SerializationNode<T extends SerializationNodeValue<any> = any> {
       return new SerializationNode<SerializationNodeValue<T>>(name, unsignedValue.map(v => SerializationNode.from(v)) as any);
     }
 
-    const object = {} as { [key in keyof T]: SerializationNode<SerializationNodeValue<any>> };
+    const object = {} as { [key in Extract<keyof (T & {}), string>]: SerializationNode<SerializationNodeValue<any>> };
     for (const key in value) {
-      object[key] = SerializationNode.from(value[key] as any) as any;
+      object[key] = SerializationNode.from(value[key]) as any;
     }
     return new SerializationNode(name, object) as any;
   }
@@ -121,5 +121,5 @@ const myObject = {
 
 const typedValue = SerializationNode.from(myObject);
 const [ tree, getRepresenter ] = typedValue.createBackloopReference();
-const representerResult = getRepresenter(tree.c.d);
+const representerResult = getRepresenter(tree.a);
 console.log(representerResult);
