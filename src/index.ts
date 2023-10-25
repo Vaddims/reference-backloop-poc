@@ -38,7 +38,7 @@ type BackloopObjectResolve<T extends { [key: string | number | symbol]: Backloop
   never;
   
 // SerializationNode is just a serialized representation of a value 
-class SerializationNode<T extends SerializationNodeValue<any> = any> {
+export class SerializationNode<T extends SerializationNodeValue<any> = any> {
   private constructor (readonly type: string | undefined, readonly value: T) {}
 
   public createBackloopReference() {
@@ -108,18 +108,3 @@ class SerializationNode<T extends SerializationNodeValue<any> = any> {
     return new SerializationNode(name, object) as any;
   }
 }
-
-const myObject = {
-  a: 'Hello World',
-  b: ['at index 0', 'at index 1'],
-  c: {
-    d: true,
-    e: null,
-    f: undefined,
-  }
-} as const;
-
-const typedValue = SerializationNode.from(myObject);
-const [ tree, getRepresenter ] = typedValue.createBackloopReference();
-const representerResult = getRepresenter(tree.a);
-console.log(representerResult);
